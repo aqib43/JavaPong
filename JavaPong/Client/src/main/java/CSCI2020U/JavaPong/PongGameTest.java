@@ -11,6 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
@@ -180,17 +181,25 @@ public class PongGameTest
         gameCanvas.heightProperty().bind(wrapperPane.heightProperty());
 
         //Create game objects
-        RectGameObject ball = new RectGameObject(new Vec2(), Color.WHITE, Color.BLUE, new Vec2(15.0f, 15.0f));
-        RectGameObject paddle1 = new RectGameObject(new Vec2(), Color.RED, Color.BLUE, new Vec2(35.0f, 105.0f));
-        RectGameObject paddle2 = new RectGameObject(new Vec2(), Color.GREEN, Color.BLUE, new Vec2(35.0f, 105.0f));
+        RectGameObject ball = new RectGameObject(new Vec2(), new Vec2(10.0f, 10.0f), Color.PINK, Color.BLUE);
+        RectGameObject paddle1 = new RectGameObject(new Vec2(), new Vec2(10.0f, 35.0f), Color.RED, Color.BLUE);
+        RectGameObject paddle2 = new RectGameObject(new Vec2(), new Vec2(10.0f, 35.0f), Color.GREEN, Color.BLUE);
+        OvalGameObject testOval = new OvalGameObject(new Vec2(-20.0f, 0.0f), new Vec2(10.0f, 10.0f), Color.PURPLE, Color.BLUE);
+        SpriteGameObject testSprite = new SpriteGameObject(new Vec2(10.0f, 0.0f), new Vec2(20.0f, 20.0f), new Image("file:res/missingTexture.jpg"));
 
         //Adds all our gameobjects
         _gameObjects.add(ball);
         _gameObjects.add(paddle1);
         _gameObjects.add(paddle2);
+        _gameObjects.add(testOval);
+        _gameObjects.add(testSprite);
 
         //Get 2d graphics context
         GraphicsContext context = gameCanvas.getGraphicsContext2D();
+
+        //Set the rendering "units"
+        GameObject.SetWorldWidth(200);
+        GameObject.SetWorldHeight(200);
 
         //Example anonymous loop
         new AnimationTimer() 
@@ -206,19 +215,23 @@ public class PongGameTest
                 int windowWidth = (int)gameCanvas.getWidth();
                 int windowHeight = (int)gameCanvas.getHeight();
 
+                //Update the static window height and window width every frame
+                GameObject.SetWindowWidth(windowWidth);
+                GameObject.SetWindowHeight(windowHeight);
+
                 //Clear screen
                 context.clearRect(0, 0, windowWidth, windowHeight);
 
                 //Updates our objects' position
-                ball.SetPosition((float)(Math.sin(totalTime) * (windowWidth / 2.0f)) + (windowWidth / 2.0f), windowHeight / 2.0f);
-                paddle1.SetPosition(50.0f, (float)(Math.sin(totalTime) * (windowHeight / 2.0f - (105.0f / 2.0f))) + (windowHeight / 2.0f));
-                paddle2.SetPosition(windowWidth - 50.0f, (float)(Math.sin(totalTime + 5.0f) * (windowHeight / 2.0f - (105.0f / 2.0f))) + (windowHeight / 2.0f));
+                ball.SetPosition((float)Math.sin(totalTime) * 50.0f, 0.0f);
+                paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, (float)Math.sin(totalTime) * 50.0f);
+                paddle2.SetPosition((GameObject.GetWorldWidth() / 2.0f) - 15.0f, (float)Math.sin(totalTime * 2.f) * 50.0f);
 
                 //Sends data to server (only if client is connected)
                 for (int i = 0; i < _gameObjects.size(); i++)
                 {
                     _gameObjects.get(i).Draw(context);
-                    _gameObjects.get(i).SendDataToServer(_client);
+                    _gameObjects.get(i).SendPositionData(_client);
                 }
             }
         }.start();

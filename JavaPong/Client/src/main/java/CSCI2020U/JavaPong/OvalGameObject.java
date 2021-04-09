@@ -5,18 +5,18 @@ import java.util.List;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.paint.Paint;
 
-public class RectGameObject extends GameObject
+public class OvalGameObject extends GameObject 
 {
     private Paint _fillColor;
     private Paint _strokeColor;
 
-    public RectGameObject()
+    public OvalGameObject()
     {
         //Just calls base class constructor
         super();
     }
 
-    public RectGameObject(Vec2 position, Vec2 size, Paint fill, Paint stroke)
+    public OvalGameObject(Vec2 position, Vec2 size, Paint fill, Paint stroke)
     {
         //Call base class for position
         super(position, size);
@@ -34,12 +34,12 @@ public class RectGameObject extends GameObject
         //Sets fill and stroke before draw
         context.setFill(_fillColor);
         context.setStroke(_strokeColor);
-
+        
         //Gets in world space
         List<Vec2> posSize = ConvertToWorld(_position, _size);
 
         //Draws the filled rect at position with size
-        context.fillRect(posSize.get(0)._x, posSize.get(0)._y, posSize.get(1)._x, posSize.get(1)._y);
+        context.fillOval(posSize.get(0)._x, posSize.get(0)._y, posSize.get(1)._x, posSize.get(1)._y);
     }
 
     protected void SetFillColor(Paint fill)

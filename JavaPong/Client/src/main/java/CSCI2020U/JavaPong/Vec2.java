@@ -81,6 +81,12 @@ public class Vec2
         return (_x * v2._y) - (_y * v2._x);
     }
 
+    public void Set(float x, float y)
+    {
+        _x = x;
+        _y = y;
+    }
+
     public void SetX(float x)
     {
         _x = x;
