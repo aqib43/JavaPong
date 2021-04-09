@@ -1,0 +1,41 @@
+/* Plugins */
+// Reference: https://docs.gradle.org/current/userguide/java_plugin.html
+// apply plugin: 'java'
+// apply plugin: 'application'
+// ...
+// or
+plugins 
+{
+	id 'java'
+	id 'application'
+}
+
+/* Main Class Definition */
+mainClassName = 'CSCI2020U.JavaPong.PongServer'
+/* Repositories Block */
+// Reference: https://docs.gradle.org/current/userguide/declaring_dependencies.html
+repositories 
+{
+	mavenCentral() // Uses the 'Maven Central' repository for fetching libraries
+	// ...
+}
+/* Dependencies Block */
+// Reference: https://docs.gradle.org/current/userguide/declaring_dependencies.html
+dependencies 
+{
+	compile 'org.apache.commons:commons-csv:1.8'
+}
+
+sourceCompatibility = 1.8
+version = '1.0'
+/* Jar Block */
+// Reference: https://docs.gradle.org/current/userguide/building_java_projects.html
+jar 
+{
+	manifest 
+	{
+		attributes 'Main-Class': 'Main',
+				   'Implementation-Title': 'Main',
+				   'Implementation-Version': version
+	}
+}
