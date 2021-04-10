@@ -77,7 +77,7 @@ public abstract class GameObject
         
     }
 
-    protected void Collision(GameObject paddle) 
+    protected boolean Collision(GameObject paddle) 
     {
 
         Vec2 topLeft = new Vec2(paddle.GetPositionX()-paddle.GetSizeX()/2,
@@ -98,17 +98,27 @@ public abstract class GameObject
         //rectangle 2
         float r2W = r1H;
         float r2H = r1W;
-            
 
-        // Determine which paddle
-        if(_position._x < 0f)// left
-        {
-            //collision
-        }   
-        else // right
-        {
+        Vec2[] points = new Vec2[]{topLeft, topRight, bottomLeft, bottomRight};
 
+        for (Vec2 point:points)
+        {
+            if (CircleCol(point, radius, _position, radius))
+            {
+                return true;
+            }
         }
+            
+        if(PointBoxCol(_position, paddle.GetPosition(), new Vec2(r1W,r1H)))
+        {
+            return true;
+        }
+        if(PointBoxCol(_position, paddle.GetPosition(), new Vec2(r2W,r2H)))
+        {
+            return true;
+        }
+
+        return false;
     }
 
 
