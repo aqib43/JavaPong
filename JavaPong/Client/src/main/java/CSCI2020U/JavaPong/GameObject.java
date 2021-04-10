@@ -48,8 +48,21 @@ public abstract class GameObject
     protected void PhysicsUpdate()
     {
         float dt = 0.016f;
-        _position = _position.Add(_velocity.Multiply(dt)).Add(_accelleration.Multiply(dt * dt).Multiply(0.5f)) 
-        ;
+        _position = _position.Add(_velocity.Multiply(dt)).Add
+        (_accelleration.Multiply(dt * dt).Multiply(0.5f));
+
+        
+    }
+
+    protected void WallConstraints()
+    {
+    //keeps ball in on screen (up and down wall bounce)
+        if ((_position._y > GetWindowHeight()/2 - GetSizeY()/2) ||
+            (_position._y < -GetWindowHeight()/2 + GetSizeY()/2))
+        {
+            _velocity._y *= -1;
+        }
+        
     }
 
     private boolean PointBoxCol(Vec2 point, Vec2 pos, Vec2 size)
