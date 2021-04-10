@@ -106,11 +106,11 @@ public abstract class GameObject
 
         //rectangle 1
         float r1W = paddle.GetSizeX() + 2 * radius;
-        float r1H = paddle.GetSizeY() + 2 * radius;
+        float r1H = paddle.GetSizeY();
 
         //rectangle 2
-        float r2W = r1H;
-        float r2H = r1W;
+        float r2W = paddle.GetSizeX();
+        float r2H = paddle.GetSizeY() + 2 * radius;
 
         Vec2[] points = new Vec2[]{topLeft, topRight, bottomLeft, bottomRight};
 
