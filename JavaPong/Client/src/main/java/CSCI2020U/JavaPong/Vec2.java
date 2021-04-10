@@ -1,5 +1,7 @@
 package CSCI2020U.JavaPong;
 
+//import java.lang;
+
 public class Vec2 
 {
     float _x = 0.0f;
@@ -27,6 +29,15 @@ public class Vec2
     {
         _x = copy._x;
         _y = copy._y;
+    }
+
+    public float Length()
+    {
+        float result = _x * _x + _y * _y;
+
+        result = (float)Math.sqrt(result);
+        return result;
+
     }
 
     public Vec2 Add(Vec2 v2)

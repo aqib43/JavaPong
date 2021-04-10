@@ -18,6 +18,9 @@ public abstract class GameObject
 
     protected Vec2 _position;
     protected Vec2 _size;
+    //physics variables
+    protected Vec2 _velocity = new Vec2();
+    protected Vec2 _accelleration = new Vec2();
 
     protected GameObject()
     {
@@ -37,6 +40,77 @@ public abstract class GameObject
         //Stores size value
         SetSize(size);
     }
+
+    protected void ApplyForce(Vec2 force)
+    {
+        _accelleration = force;
+    }
+    protected void PhysicsUpdate()
+    {
+        float dt = 0.016f;
+        _position = _position.Add(_velocity.Multiply(dt)).Add(_accelleration.Multiply(dt * dt).Multiply(0.5f)) 
+        ;
+    }
+
+    private boolean PointBoxCol(Vec2 point, Vec2 pos, Vec2 size)
+    {
+        if((point._x < (pos._x + size._x/2.0f))&& (point._x > (pos._x - size._x/2.0f)))
+        {
+            if((point._y < pos._y + size._y/2.0f) && (point._y > pos._y - size._y/2.0f))
+            {
+                return true;
+            }
+            
+            
+        }
+        return false;
+    }
+
+    private boolean CircleCol(Vec2 point1, float r1, Vec2 point2, float r2)
+    {
+        if ((point2.Subtract(point1).Length() < r1 + r2))
+        {
+            return true;
+        }
+        
+        return false;
+        
+    }
+
+    protected void Collision(GameObject paddle) 
+    {
+
+        Vec2 topLeft = new Vec2(paddle.GetPositionX()-paddle.GetSizeX()/2,
+                                paddle.GetPositionY()+paddle.GetSizeY()/2);
+        Vec2 topRight = new Vec2(paddle.GetPositionX()+paddle.GetSizeX()/2,
+                                paddle.GetPositionY()+paddle.GetSizeY()/2);
+        Vec2 bottomLeft = new Vec2(paddle.GetPositionX()-paddle.GetSizeX()/2,
+                                paddle.GetPositionY()-paddle.GetSizeY()/2);
+        Vec2 bottomRight = new Vec2(paddle.GetPositionX()+paddle.GetSizeX()/2,
+                                paddle.GetPositionY()-paddle.GetSizeY()/2);
+
+        float radius = GetSizeX();
+
+        //rectangle 1
+        float r1W = paddle.GetSizeX() + 2 * radius;
+        float r1H = paddle.GetSizeY() + 2 * radius;
+
+        //rectangle 2
+        float r2W = r1H;
+        float r2H = r1W;
+            
+
+        // Determine which paddle
+        if(_position._x < 0f)// left
+        {
+            //collision
+        }   
+        else // right
+        {
+
+        }
+    }
+
 
     protected void Draw(GraphicsContext context)
     {
