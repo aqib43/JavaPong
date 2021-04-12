@@ -59,20 +59,17 @@ public abstract class GameObject
         float dt = 0.016f;
         _position = _position.Add(_velocity.Multiply(dt)).Add
         (_accelleration.Multiply(dt * dt).Multiply(0.5f));
-
-        WallConstraints();
-
-        
+ 
     }
 
     private void WallConstraints()
     {
     //keeps ball in on screen (up and down wall bounce)
-        if (_position._y > GetWorldHeight()/2 - GetSizeY()/2)
+        if (_position._y > GetWorldHeight()/2 - GetSizeY())
         {
             _velocity._y = Math.abs(_velocity._y) * (-1);
         }
-        else if (_position._y < -GetWorldHeight()/2 + GetSizeY()/2)
+        else if (_position._y < -(GetWorldHeight())/2)
         {
             _velocity._y = Math.abs(_velocity._y);
         }
@@ -106,6 +103,7 @@ public abstract class GameObject
 
     protected boolean Collision(GameObject paddle) 
     {
+        WallConstraints();
 
         //Vec2 topLeft = new Vec2(paddle.GetPositionX()-paddle.GetSizeX()/2,
         //                        paddle.GetPositionY()+paddle.GetSizeY()/2);
@@ -117,9 +115,9 @@ public abstract class GameObject
         //                        paddle.GetPositionY()-paddle.GetSizeY()/2);
 
         Vec2 topLeft = paddle.GetPosition();
-        Vec2 topRight = new Vec2(paddle.GetPositionX()+paddle.GetSizeX(),
+        Vec2 topRight = new Vec2(paddle.GetPositionX() + paddle.GetSizeX(),
                                 paddle.GetPositionY());
-        Vec2 bottomLeft = new Vec2(paddle.GetPositionX(), 
+        Vec2 bottomLeft = new Vec2( paddle.GetPositionX(), 
                                     paddle.GetPositionY() + paddle.GetSizeY());
         Vec2 bottomRight = new Vec2(paddle.GetPositionX() + paddle.GetSizeX(), 
                                     paddle.GetPositionY() + paddle.GetSizeY());

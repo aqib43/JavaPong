@@ -33,10 +33,10 @@ public class Vec2
 
     public float Length()
     {
-        float result = _x * _x + _y * _y;
+        return (float)Math.sqrt((_x * _x) + (_y * _y));
 
-        result = (float)Math.sqrt(result);
-        return result;
+        //result = (float)Math.sqrt(result);
+        //return result;
 
     }
 
