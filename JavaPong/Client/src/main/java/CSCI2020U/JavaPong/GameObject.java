@@ -41,9 +41,18 @@ public abstract class GameObject
         SetSize(size);
     }
 
-    protected void ApplyForce(Vec2 force)
+    protected void SetVelocity(Vec2 force)
     {
-        _accelleration = force;
+        //_accelleration = force;
+        _velocity = force;
+    }
+    protected void SetVelocityX(float x)
+    {
+        _velocity._x = x;
+    }
+    protected Vec2 GetVelocity() 
+    {
+        return _velocity;
     }
     protected void PhysicsUpdate()
     {
@@ -51,16 +60,21 @@ public abstract class GameObject
         _position = _position.Add(_velocity.Multiply(dt)).Add
         (_accelleration.Multiply(dt * dt).Multiply(0.5f));
 
+        WallConstraints();
+
         
     }
 
-    protected void WallConstraints()
+    private void WallConstraints()
     {
     //keeps ball in on screen (up and down wall bounce)
-        if ((_position._y > GetWindowHeight()/2 - GetSizeY()/2) ||
-            (_position._y < -GetWindowHeight()/2 + GetSizeY()/2))
+        if (_position._y > GetWorldHeight()/2 - GetSizeY()/2)
         {
-            _velocity._y *= -1;
+            _velocity._y = Math.abs(_velocity._y) * (-1);
+        }
+        else if (_position._y < -GetWorldHeight()/2 + GetSizeY()/2)
+        {
+            _velocity._y = Math.abs(_velocity._y);
         }
         
     }
@@ -93,40 +107,51 @@ public abstract class GameObject
     protected boolean Collision(GameObject paddle) 
     {
 
-        Vec2 topLeft = new Vec2(paddle.GetPositionX()-paddle.GetSizeX()/2,
-                                paddle.GetPositionY()+paddle.GetSizeY()/2);
-        Vec2 topRight = new Vec2(paddle.GetPositionX()+paddle.GetSizeX()/2,
-                                paddle.GetPositionY()+paddle.GetSizeY()/2);
-        Vec2 bottomLeft = new Vec2(paddle.GetPositionX()-paddle.GetSizeX()/2,
-                                paddle.GetPositionY()-paddle.GetSizeY()/2);
-        Vec2 bottomRight = new Vec2(paddle.GetPositionX()+paddle.GetSizeX()/2,
-                                paddle.GetPositionY()-paddle.GetSizeY()/2);
+        //Vec2 topLeft = new Vec2(paddle.GetPositionX()-paddle.GetSizeX()/2,
+        //                        paddle.GetPositionY()+paddle.GetSizeY()/2);
+        //Vec2 topRight = new Vec2(paddle.GetPositionX()+paddle.GetSizeX()/2,
+        //                        paddle.GetPositionY()+paddle.GetSizeY()/2);
+        //Vec2 bottomLeft = new Vec2(paddle.GetPositionX()-paddle.GetSizeX()/2,
+        //                        paddle.GetPositionY()-paddle.GetSizeY()/2);
+        //Vec2 bottomRight = new Vec2(paddle.GetPositionX()+paddle.GetSizeX()/2,
+        //                        paddle.GetPositionY()-paddle.GetSizeY()/2);
 
-        float radius = GetSizeX();
+        Vec2 topLeft = paddle.GetPosition();
+        Vec2 topRight = new Vec2(paddle.GetPositionX()+paddle.GetSizeX(),
+                                paddle.GetPositionY());
+        Vec2 bottomLeft = new Vec2(paddle.GetPositionX(), 
+                                    paddle.GetPositionY() + paddle.GetSizeY());
+        Vec2 bottomRight = new Vec2(paddle.GetPositionX() + paddle.GetSizeX(), 
+                                    paddle.GetPositionY() + paddle.GetSizeY());
+
+        float diameter = GetSizeX();
 
         //rectangle 1
-        float r1W = paddle.GetSizeX() + 2 * radius;
+        float r1W = paddle.GetSizeX() + diameter;
         float r1H = paddle.GetSizeY();
 
         //rectangle 2
         float r2W = paddle.GetSizeX();
-        float r2H = paddle.GetSizeY() + 2 * radius;
+        float r2H = paddle.GetSizeY() + diameter;
 
         Vec2[] points = new Vec2[]{topLeft, topRight, bottomLeft, bottomRight};
+        Vec2 ballCenter = _position.Add(_size.Multiply(0.5f));
+
+        Vec2 paddleCenter = paddle.GetPosition().Add(paddle.GetSize().Multiply(0.5f));
 
         for (Vec2 point:points)
         {
-            if (CircleCol(point, radius, _position, radius))
+            if (CircleCol(point, diameter/2, ballCenter, diameter/2))
             {
                 return true;
             }
         }
             
-        if(PointBoxCol(_position, paddle.GetPosition(), new Vec2(r1W,r1H)))
+        if(PointBoxCol(ballCenter, paddleCenter, new Vec2(r1W,r1H)))
         {
             return true;
         }
-        if(PointBoxCol(_position, paddle.GetPosition(), new Vec2(r2W,r2H)))
+        if(PointBoxCol(ballCenter, paddleCenter, new Vec2(r2W,r2H)))
         {
             return true;
         }

@@ -181,18 +181,20 @@ public class PongGameTest
         gameCanvas.heightProperty().bind(wrapperPane.heightProperty());
 
         //Create game objects
-        RectGameObject ball = new RectGameObject(new Vec2(), new Vec2(10.0f, 10.0f), Color.PINK, Color.BLUE);
+        //RectGameObject ball = new RectGameObject(new Vec2(), new Vec2(10.0f, 10.0f), Color.PINK, Color.BLUE);
+        OvalGameObject ball = new OvalGameObject(new Vec2(), new Vec2(10.0f, 10.0f), Color.PURPLE, Color.BLUE);
         RectGameObject paddle1 = new RectGameObject(new Vec2(), new Vec2(10.0f, 35.0f), Color.RED, Color.BLUE);
         RectGameObject paddle2 = new RectGameObject(new Vec2(), new Vec2(10.0f, 35.0f), Color.GREEN, Color.BLUE);
-        OvalGameObject testOval = new OvalGameObject(new Vec2(-20.0f, 0.0f), new Vec2(10.0f, 10.0f), Color.PURPLE, Color.BLUE);
-        SpriteGameObject testSprite = new SpriteGameObject(new Vec2(10.0f, 0.0f), new Vec2(20.0f, 20.0f), new Image("file:res/missingTexture.jpg"));
+        //OvalGameObject testOval = new OvalGameObject(new Vec2(-20.0f, 0.0f), new Vec2(10.0f, 10.0f), Color.PURPLE, Color.BLUE);
+        //SpriteGameObject testSprite = new SpriteGameObject(new Vec2(10.0f, 0.0f), new Vec2(20.0f, 20.0f), new Image("file:res/missingTexture.jpg"));
 
         //Adds all our gameobjects
         _gameObjects.add(ball);
         _gameObjects.add(paddle1);
         _gameObjects.add(paddle2);
-        _gameObjects.add(testOval);
-        _gameObjects.add(testSprite);
+        //_gameObjects.add(testOval);
+        //_gameObjects.add(testSprite);
+        ball.SetVelocity(new Vec2(20,50));
 
         //Get 2d graphics context
         GraphicsContext context = gameCanvas.getGraphicsContext2D();
@@ -223,7 +225,18 @@ public class PongGameTest
                 context.clearRect(0, 0, windowWidth, windowHeight);
 
                 //Updates our objects' position
-                ball.SetPosition((float)Math.sin(totalTime) * 50.0f, 0.0f);
+                //ball.SetPosition((float)Math.sin(totalTime) * 50.0f, 0.0f);
+                ball.PhysicsUpdate();
+
+                if(ball.Collision(paddle1))
+                {
+                    ball.SetVelocityX(Math.abs(ball.GetVelocity()._x));
+                }
+                else if(ball.Collision(paddle2))
+                {
+                    ball.SetVelocityX(-(Math.abs(ball.GetVelocity()._x)));
+                }
+                
                 paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, (float)Math.sin(totalTime) * 50.0f);
                 paddle2.SetPosition((GameObject.GetWorldWidth() / 2.0f) - 15.0f, (float)Math.sin(totalTime * 2.f) * 50.0f);
 
