@@ -26,7 +26,11 @@ public class PongGameTest
 
     public List<GameObject> _gameObjects = new ArrayList();
 
-    public PongClient _client = new PongClient("localhost", 8080, null);;
+    public PongClient _client = new PongClient("localhost", 8080, null);
+
+    private int playerNum = 0;
+
+    private boolean recv = false;
 
     PongGameTest()
     {
@@ -202,13 +206,21 @@ public class PongGameTest
         //Set the rendering "units"
         GameObject.SetWorldWidth(200);
         GameObject.SetWorldHeight(200);
-
+        
         //Example anonymous loop
         new AnimationTimer() 
         {   
             @Override
             public void handle(long currentNanoTime) 
             {
+                if(_client.GetConnected() && !recv)
+                {
+                    recv = true;
+                    System.out.println("I am here");
+                    //playerNum = _client.GetPlayerNumber();
+                    System.out.println("but not here");
+                }
+
                 //Gets different time values
                 //SHOULD JUST MAKE TIMER CLASS THAT CONVERTS NANOTIME
                 double totalTime = (currentNanoTime - startNanoTime) / 1000000000.0;

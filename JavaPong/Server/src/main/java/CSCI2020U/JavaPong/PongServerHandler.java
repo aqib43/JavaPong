@@ -8,26 +8,47 @@ public class PongServerHandler implements Runnable
 {
 	private Socket socket = null;
 	private BufferedReader requestInput = null;
-	private DataOutputStream responseOutput = null;
+	private PrintWriter responseOutput = null;
 
 	private boolean keepReading = true;
 
-	public PongServerHandler(Socket socket) throws IOException 
+	public PongServerHandler otherClient = null;
+
+	private float x;
+	private float y;
+	private int playerNum;
+
+	public PongServerHandler(Socket socket, int playerNumber) throws IOException 
 	{
 		this.socket = socket;
 		requestInput = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-		responseOutput = new DataOutputStream(socket.getOutputStream());
+		responseOutput = new PrintWriter(socket.getOutputStream());
+		playerNum = playerNumber;
+
+		
+		
 	}
 
 
 	public void run() 
 	{
 		String line = null;
+		try {
+
+			line = requestInput.readLine();
+			System.out.println(line);
+			sendResponse(String.valueOf(playerNum));
+			System.out.println("sent");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		while (keepReading)
 		{
 			try 
 			{
+				
 				line = requestInput.readLine();
+				//System.out.println("not progressing");
 				handleRequest(line);
 			} 
 			catch (IOException e) 
@@ -76,11 +97,17 @@ public class PongServerHandler implements Runnable
 					//Splits based on spaces
 					String[] information = request.split("\\s+");
 					objName = Integer.parseInt(information[1]);
-					objX = Float.parseFloat(information[2]);
-					objY = Float.parseFloat(information[3]);
+					x = Float.parseFloat(information[2]);
+					y = Float.parseFloat(information[3]);
 
 					//Print out the object information
-					System.out.println(objName + " " + objX + " " + objY);
+					System.out.println(objName + " " + x +
+					 " " + y);
+
+					//byte[] content = Float.floatToIntBits(x);
+					//byte[] content2 = Float.floatToIntBits(y);
+					//otherClient.sendResponse(content);
+					//otherClient.sendResponse(content2);
 				}
 				else 
 				{
@@ -95,10 +122,11 @@ public class PongServerHandler implements Runnable
 
 	}
 
-	private void sendResponse(byte[] content) throws IOException 
+	private void sendResponse(String content) throws IOException 
 	{
-		responseOutput.write(content);
+		responseOutput.print(content);
 		responseOutput.flush();
+		System.out.println(content);
 	}
 
 	private void sendError(int errorCode,
@@ -107,6 +135,6 @@ public class PongServerHandler implements Runnable
 	{
 		String responseCode = "HTTP/1.1 " + errorCode + " " + errorMessage + "\r\n";
 		String content = "Error reading file";
-		sendResponse(content.getBytes());
+		//sendResponse(content.getBytes());
 	}
 }

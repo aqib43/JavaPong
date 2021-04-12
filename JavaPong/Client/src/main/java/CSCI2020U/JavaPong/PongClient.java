@@ -17,6 +17,8 @@ public class PongClient
 
 	private Text _connected = null;
 
+	public int playerNum;
+
 	public PongClient(String host, int port, Text connected) 
 	{
 		//Sets hostName to host
@@ -44,6 +46,25 @@ public class PongClient
 		return connected;
 	}
 
+	public int GetPlayerNumber()
+	{
+		try 
+		{
+			String line = null;
+
+			System.out.println("reading in");
+			line = _in.readLine();
+			System.out.println(line);
+			playerNum = Integer.parseInt(line);
+			
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		return playerNum;
+	}
+
 	public void ConnectToServer() 
 	{
 		try 
@@ -54,10 +75,18 @@ public class PongClient
 			_in = new BufferedReader(new InputStreamReader(_socket.getInputStream()));
 			_out = new PrintWriter(_socket.getOutputStream());
 
+			SendRequest("Connected");
+			System.out.println("Connected");
+			//GetPlayerNumber();
+			String line = null;
+			//line = _in.readLine();
+			System.out.println("sent");
+
 			if (_connected != null)
 			{
 				_connected.setText("Connected to Server!");
 			}
+			
 		} 
 		catch (IOException e) 
 		{

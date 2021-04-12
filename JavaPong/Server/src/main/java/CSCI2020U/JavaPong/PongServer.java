@@ -22,9 +22,19 @@ public class PongServer
 		while (true) 
 		{
 			Socket clientSocket = serverSocket.accept();
-			PongServerHandler handler = new PongServerHandler(clientSocket);
+
+			PongServerHandler handler = new PongServerHandler(clientSocket,1);
 			Thread handlerThread = new Thread(handler);
 			handlerThread.start();
+
+			Socket clientSocket2 = serverSocket.accept();
+			
+			PongServerHandler handler2 = new PongServerHandler(clientSocket2,2);
+			Thread handlerThread2= new Thread(handler2);
+			handlerThread2.start();
+
+			handler.otherClient = handler2;
+			handler2.otherClient = handler;
 		}
 	}
 
