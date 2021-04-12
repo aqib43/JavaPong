@@ -92,9 +92,9 @@ public abstract class GameObject
 
     private boolean CircleCol(Vec2 point1, float r1, Vec2 point2, float r2)
     {
-        if ((point2.Subtract(point1).Length() < r1 + r2))
+        if ((point2.Subtract(point1).Length() < (r1 + r2)))
         {
-            return true;
+            return false;
         }
         
         return false;
@@ -125,12 +125,12 @@ public abstract class GameObject
         float diameter = GetSizeX();
 
         //rectangle 1
-        float r1W = paddle.GetSizeX() + diameter;
+        float r1W = paddle.GetSizeX();// + diameter;
         float r1H = paddle.GetSizeY();
 
         //rectangle 2
         float r2W = paddle.GetSizeX();
-        float r2H = paddle.GetSizeY() + diameter;
+        float r2H = paddle.GetSizeY();// + diameter;
 
         Vec2[] points = new Vec2[]{topLeft, topRight, bottomLeft, bottomRight};
         Vec2 ballCenter = _position.Add(_size.Multiply(0.5f));
