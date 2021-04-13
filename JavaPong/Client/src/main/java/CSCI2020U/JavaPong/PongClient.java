@@ -18,6 +18,7 @@ public class PongClient
 	private Text _connected = null;
 
 	public int playerNum;
+	public boolean ready = false;
 
 	public PongClient(String host, int port, Text connected) 
 	{
@@ -77,10 +78,15 @@ public class PongClient
 
 			SendRequest("Connected");
 			System.out.println("Connected");
-			//GetPlayerNumber();
+			GetPlayerNumber();
 			String line = null;
-			//line = _in.readLine();
-			System.out.println("sent");
+			line = _in.readLine();
+
+			//if(line.equalsIgnoreCase("READY"))
+			//{
+				ready = true;
+			//}
+			//System.out.println("sent");
 
 			if (_connected != null)
 			{

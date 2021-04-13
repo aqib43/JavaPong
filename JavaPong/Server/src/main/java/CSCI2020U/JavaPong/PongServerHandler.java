@@ -39,6 +39,14 @@ public class PongServerHandler implements Runnable
 			System.out.println(line);
 			sendResponse(String.valueOf(playerNum));
 			System.out.println("sent");
+
+			while(otherClient == null)
+			{
+
+			}
+
+			sendResponse("READY");
+			otherClient.sendResponse("READY");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -91,8 +99,8 @@ public class PongServerHandler implements Runnable
 				{
 					//Get the rest of the information from the message
 					int objName = 0;
-					float objX = 0.0f;
-					float objY = 0.0f;
+					//float objX = 0.0f;
+					//float objY = 0.0f;
 
 					//Splits based on spaces
 					String[] information = request.split("\\s+");
@@ -124,7 +132,7 @@ public class PongServerHandler implements Runnable
 
 	private void sendResponse(String content) throws IOException 
 	{
-		responseOutput.print(content);
+		responseOutput.println(content);
 		responseOutput.flush();
 		System.out.println(content);
 	}
@@ -133,8 +141,8 @@ public class PongServerHandler implements Runnable
 						   String errorMessage,
 						   String description) throws IOException 
 	{
-		String responseCode = "HTTP/1.1 " + errorCode + " " + errorMessage + "\r\n";
-		String content = "Error reading file";
+		//String responseCode = "HTTP/1.1 " + errorCode + " " + errorMessage + "\r\n";
+		//String content = "Error reading file";
 		//sendResponse(content.getBytes());
 	}
 }
