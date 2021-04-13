@@ -17,6 +17,12 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+//import javafx.scene.input;
+import java.lang.Object;
+import java.lang.Enum;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
+import javafx.event.EventHandler;
 
 public class PongGameTest 
 {
@@ -32,11 +38,16 @@ public class PongGameTest
 
     private boolean recv = false;
 
+    private boolean _up = false;
+    private boolean _down = false;
+    private boolean _left = false;
+    private boolean _right = false;
+
     PongGameTest()
     {
 
     }
-
+ 
     public void start(Stage primaryStage)
     {
         if (_sceneRoot == null) 
@@ -60,6 +71,8 @@ public class PongGameTest
             SetupConnectionButtons(topMenu);
             SetupReturnButton(topMenu, primaryStage);
 
+            SetupKeyListener(primaryStage);
+
             // Creates our game loop
             TestUpdateInit(root);
         }
@@ -70,6 +83,61 @@ public class PongGameTest
         primaryStage.getScene().setRoot(_sceneRoot);
 
         primaryStage.show();
+    }
+
+    public void SetupKeyListener(Stage primaryStage)
+    {
+        //Scene scene = _sceneRoot.getScene();
+
+        primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>(){
+            @Override
+            public void handle(KeyEvent event)
+            {
+                switch (event.getCode()) {
+                    case W:
+                        _up = true;
+                        break;
+                    case S:
+                        _down = true;
+                        break;
+                    case A:
+                        _left = true;
+                        break;
+                    case D:
+                        _right = true;
+                        break;
+                
+                    default:
+                        break;
+                }
+            }
+        });
+
+        
+
+        primaryStage.getScene().setOnKeyReleased(new EventHandler<KeyEvent>(){
+            @Override
+            public void handle(KeyEvent event)
+            {
+                switch (event.getCode()) {
+                    case W:
+                        _up = false;
+                        break;
+                    case S:
+                        _down = false;
+                        break;
+                    case A:
+                        _left = false;
+                        break;
+                    case D:
+                        _right = false;
+                        break;
+                
+                    default:
+                        break;
+                }
+            }
+        });
     }
 
     public void SetupConnectedText(GridPane topMenu)
@@ -198,7 +266,7 @@ public class PongGameTest
         _gameObjects.add(paddle2);
         //_gameObjects.add(testOval);
         //_gameObjects.add(testSprite);
-        ball.SetVelocity(new Vec2(20,50));
+        ball.SetVelocity(new Vec2(10,20));
 
         //Get 2d graphics context
         GraphicsContext context = gameCanvas.getGraphicsContext2D();
@@ -206,7 +274,8 @@ public class PongGameTest
         //Set the rendering "units"
         GameObject.SetWorldWidth(200);
         GameObject.SetWorldHeight(200);
-        
+        paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, 0);
+        paddle2.SetPosition((GameObject.GetWorldWidth() / 2.0f) - 5.0f, 0);
         //Example anonymous loop
         new AnimationTimer() 
         {   
@@ -246,8 +315,55 @@ public class PongGameTest
                         ball.SetVelocityX(-(Math.abs(ball.GetVelocity()._x)));
                     }
 
-                    paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, (float)Math.sin(totalTime) * 50.0f);
-                    paddle2.SetPosition((GameObject.GetWorldWidth() / 2.0f) - 15.0f, (float)Math.sin(totalTime * 2.f) * 50.0f);
+                    
+
+                    if(_client.playerNum == 1)
+                    {
+                        //paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, (float)Math.sin(totalTime) * 50.0f);
+                        if(_up)
+                        {
+                            paddle1.SetPosition(new Vec2(paddle1.GetPositionX(), 
+                            paddle1.GetPositionY() - 2));
+                        }
+                        if(_down)
+                        {
+                            paddle1.SetPosition(new Vec2(paddle1.GetPositionX(), 
+                            paddle1.GetPositionY() + 2));
+                        }
+                        //if(_left)
+                        //{
+                        //    paddle1.SetPosition(new Vec2(paddle1.GetPositionX() - 2, 
+                        //    paddle1.GetPositionY()));
+                        //}
+                        //if(_right)
+                        //{
+                        //    paddle1.SetPosition(new Vec2(paddle1.GetPositionX() + 2, 
+                        //    paddle1.GetPositionY()));
+                        //}
+                    }
+                    if(_client.playerNum == 2)
+                    {
+                        if(_up)
+                        {
+                            paddle2.SetPosition(new Vec2(paddle2.GetPositionX(), 
+                            paddle2.GetPositionY() - 2));
+                        }
+                        if(_down)
+                        {
+                            paddle2.SetPosition(new Vec2(paddle2.GetPositionX(), 
+                            paddle2.GetPositionY() + 2));
+                        }
+                        //if(_left)
+                        //{
+                        //    paddle2.SetPosition(new Vec2(paddle2.GetPositionX() - 2, 
+                        //    paddle2.GetPositionY()));
+                        //}
+                        //if(_right)
+                        //{
+                        //    paddle2.SetPosition(new Vec2(paddle2.GetPositionX() + 2, 
+                        //    paddle2.GetPositionY()));
+                        //}
+                    }
 
                     //Sends data to server (only if client is connected)
                     for (int i = 0; i < _gameObjects.size(); i++)
@@ -265,3 +381,5 @@ public class PongGameTest
         node.setBackground(new Background(new BackgroundFill(fill, CornerRadii.EMPTY, Insets.EMPTY)));
     }
 }
+
+
