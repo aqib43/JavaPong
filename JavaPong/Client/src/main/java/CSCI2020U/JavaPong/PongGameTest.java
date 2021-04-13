@@ -275,7 +275,7 @@ public class PongGameTest
         GameObject.SetWorldWidth(200);
         GameObject.SetWorldHeight(200);
         paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, 0);
-        paddle2.SetPosition((GameObject.GetWorldWidth() / 2.0f) - 5.0f, 0);
+        paddle2.SetPosition((GameObject.GetWorldWidth() / 2.0f) - 10.0f, 0);
         //Example anonymous loop
         new AnimationTimer() 
         {   
@@ -285,7 +285,7 @@ public class PongGameTest
                 if(_client.GetConnected() && _client.ready)
                 {
                         
-                    
+                   System.out.println("Connected to and ready");
 
                     //Gets different time values
                     //SHOULD JUST MAKE TIMER CLASS THAT CONVERTS NANOTIME
@@ -369,8 +369,23 @@ public class PongGameTest
                     for (int i = 0; i < _gameObjects.size(); i++)
                     {
                         _gameObjects.get(i).Draw(context);
-                        _gameObjects.get(i).SendPositionData(_client);
+                        //_gameObjects.get(i).SendPositionData(_client);
                     }
+
+                    switch (_client.playerNum) {
+                        case 1:
+                            paddle1.SendPositionData(_client);
+                            paddle2.SetPositionY(_client.ReadPosition());
+                            break;
+                        case 2:
+                            paddle2.SendPositionData(_client);
+                            paddle1.SetPositionY(_client.ReadPosition());
+                            break;
+                        default:
+                            break;
+                    }
+                    //System.out.println("At the bottom");
+                    //float temp = _client.ReadPosition();
                 }
             }
         }.start();

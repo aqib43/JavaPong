@@ -14,7 +14,7 @@ public class PongServerHandler implements Runnable
 
 	public PongServerHandler otherClient = null;
 
-	private float x;
+	//private float x;
 	private float y;
 	private int playerNum;
 
@@ -42,12 +42,14 @@ public class PongServerHandler implements Runnable
 
 			while(otherClient == null)
 			{
-
+				System.out.println("waiting for other client");
 			}
 
 			sendResponse("READY");
-			otherClient.sendResponse("READY");
-		} catch (IOException e) {
+			//otherClient.sendResponse("READY");
+
+			//Thread.sleep(2000);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		while (keepReading)
@@ -56,7 +58,7 @@ public class PongServerHandler implements Runnable
 			{
 				
 				line = requestInput.readLine();
-				//System.out.println("not progressing");
+				System.out.println(line);
 				handleRequest(line);
 			} 
 			catch (IOException e) 
@@ -98,24 +100,24 @@ public class PongServerHandler implements Runnable
 				else if (command.equalsIgnoreCase("POSITION"))
 				{
 					//Get the rest of the information from the message
-					int objName = 0;
+					//int objName = 0;
 					//float objX = 0.0f;
 					//float objY = 0.0f;
 
 					//Splits based on spaces
 					String[] information = request.split("\\s+");
-					objName = Integer.parseInt(information[1]);
-					x = Float.parseFloat(information[2]);
-					y = Float.parseFloat(information[3]);
+					//objName = Integer.parseInt(information[1]);
+					
+					y = Float.parseFloat(information[1]);
 
 					//Print out the object information
-					System.out.println(objName + " " + x +
-					 " " + y);
+					System.out.println("y = " + y);
 
 					//byte[] content = Float.floatToIntBits(x);
 					//byte[] content2 = Float.floatToIntBits(y);
 					//otherClient.sendResponse(content);
 					//otherClient.sendResponse(content2);
+					otherClient.sendResponse(Float.toString(y));
 				}
 				else 
 				{
@@ -134,7 +136,7 @@ public class PongServerHandler implements Runnable
 	{
 		responseOutput.println(content);
 		responseOutput.flush();
-		System.out.println(content);
+		System.out.println("Sending: " + content);
 	}
 
 	private void sendError(int errorCode,

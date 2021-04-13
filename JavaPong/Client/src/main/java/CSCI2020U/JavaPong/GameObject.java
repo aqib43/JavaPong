@@ -210,7 +210,8 @@ public abstract class GameObject
     {
         if (client.GetConnected())
         {
-            client.SendRequest("POSITION " + _personalID + " " + _position._x + " " + _position._y);
+            client.SendRequest("POSITION " + _position._y);
+            System.out.println("POSITION " + _position._y);
         }
     }
 

@@ -2,6 +2,7 @@ package CSCI2020U.JavaPong;
 
 import java.io.*;
 import java.net.*;
+import java.util.*;
 
 import javafx.scene.text.Text;
 
@@ -66,6 +67,37 @@ public class PongClient
 		return playerNum;
 	}
 
+	public float ReadPosition()
+	{
+		float result = 0f;
+		try 
+		{
+			String request = null;
+			System.out.println("Reading y");
+
+			request = _in.readLine();
+			if (request != null)
+			{
+				StringTokenizer tokenizer = new StringTokenizer(request);
+				
+				String y = "";
+		
+				if (tokenizer.hasMoreTokens())
+				{
+					y = tokenizer.nextToken();		
+				}
+				result = Float.parseFloat(y);
+				System.out.println("read y");
+			}
+	
+		}
+		catch (IOException e) 
+		{
+			e.printStackTrace();
+		}
+		return result;
+	}
+
 	public void ConnectToServer() 
 	{
 		try 
@@ -81,6 +113,8 @@ public class PongClient
 			GetPlayerNumber();
 			String line = null;
 			line = _in.readLine();
+			System.out.println(line);
+			
 
 			//if(line.equalsIgnoreCase("READY"))
 			//{
