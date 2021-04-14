@@ -320,26 +320,16 @@ public class PongGameTest
                     if(_client.playerNum == 1)
                     {
                         //paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, (float)Math.sin(totalTime) * 50.0f);
-                        if(_up)
+                        if(_up && !(paddle1.GetPositionY() <= -(GameObject.GetWorldHeight() / 2.0)))
                         {
                             paddle1.SetPosition(new Vec2(paddle1.GetPositionX(), 
                             paddle1.GetPositionY() - 2));
                         }
-                        if(_down)
+                        if(_down && !(paddle1.GetPositionY() >= (GameObject.GetWorldHeight() / 2.0)))
                         {
                             paddle1.SetPosition(new Vec2(paddle1.GetPositionX(), 
                             paddle1.GetPositionY() + 2));
                         }
-                        //if(_left)
-                        //{
-                        //    paddle1.SetPosition(new Vec2(paddle1.GetPositionX() - 2, 
-                        //    paddle1.GetPositionY()));
-                        //}
-                        //if(_right)
-                        //{
-                        //    paddle1.SetPosition(new Vec2(paddle1.GetPositionX() + 2, 
-                        //    paddle1.GetPositionY()));
-                        //}
                     }
                     if(_client.playerNum == 2)
                     {

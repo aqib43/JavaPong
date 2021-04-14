@@ -24,6 +24,7 @@ public class TextGameObject extends GameObject
         super(pos, size);
 
         SetText(text);
+        SetFont(font);
 
         SetFillColor(fill);
         SetStrokeColor(stroke);
@@ -40,9 +41,9 @@ public class TextGameObject extends GameObject
         //Gets in world space
         List<Vec2> posSize = ConvertToWorld(_position, _size);
 
-        context.setFont(f);
+        context.setFont(_font);
         //Draws the filled rect at position with size
-        context.fillText(_text, posSize.get(0)._x, posSize.get(0)._y, posSize.get(1)._x);
+        context.fillText(_text, posSize.get(0)._x, posSize.get(0)._y);
     }
 
     protected void SetText(String text)
