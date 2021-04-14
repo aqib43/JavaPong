@@ -15,6 +15,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
+import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 //import javafx.scene.input;
@@ -35,6 +36,11 @@ public class PongGameTest
     public PongClient _client = new PongClient("localhost", 8080, null);
 
     private int playerNum = 0;
+
+    private int player1Score = 0;
+    private int player2Score = 0;
+
+    private boolean gameOver = false;
 
     private boolean recv = false;
 
@@ -244,6 +250,7 @@ public class PongGameTest
         Pane wrapperPane = new Pane();
         root.setCenter(wrapperPane);
         root.setAlignment(wrapperPane, Pos.CENTER);
+        SetBackgroundColor(wrapperPane, Color.BLACK);
 
         //Sets center to the game canvas
         Canvas gameCanvas = new Canvas();
@@ -253,19 +260,23 @@ public class PongGameTest
         gameCanvas.heightProperty().bind(wrapperPane.heightProperty());
 
         //Create game objects
-        //RectGameObject ball = new RectGameObject(new Vec2(), new Vec2(10.0f, 10.0f), Color.PINK, Color.BLUE);
-        OvalGameObject ball = new OvalGameObject(new Vec2(), new Vec2(10.0f, 10.0f), Color.PURPLE, Color.BLUE);
-        RectGameObject paddle1 = new RectGameObject(new Vec2(), new Vec2(10.0f, 35.0f), Color.RED, Color.BLUE);
-        RectGameObject paddle2 = new RectGameObject(new Vec2(), new Vec2(10.0f, 35.0f), Color.GREEN, Color.BLUE);
-        //OvalGameObject testOval = new OvalGameObject(new Vec2(-20.0f, 0.0f), new Vec2(10.0f, 10.0f), Color.PURPLE, Color.BLUE);
-        //SpriteGameObject testSprite = new SpriteGameObject(new Vec2(10.0f, 0.0f), new Vec2(20.0f, 20.0f), new Image("file:res/missingTexture.jpg"));
+        OvalGameObject ball = new OvalGameObject(new Vec2(), new Vec2(10.0f, 10.0f), Color.WHITE, Color.BLACK);
+        RectGameObject paddle1 = new RectGameObject(new Vec2(), new Vec2(10.0f, 35.0f), Color.WHITE, Color.BLACK);
+        RectGameObject paddle2 = new RectGameObject(new Vec2(), new Vec2(10.0f, 35.0f), Color.WHITE, Color.BLUE);
+
+        TextGameObject scoreOne = new TextGameObject(Integer.toString(player1Score), 
+        Font.font("arial", 40), new Vec2(), new Vec2(), Color.WHITE, Color.BLACK);
+        
+        TextGameObject scoreTwo = new TextGameObject(Integer.toString(player2Score), 
+        Font.font("arial", 40), new Vec2(), new Vec2(), Color.WHITE, Color.BLACK);
 
         //Adds all our gameobjects
         _gameObjects.add(ball);
         _gameObjects.add(paddle1);
         _gameObjects.add(paddle2);
-        //_gameObjects.add(testOval);
-        //_gameObjects.add(testSprite);
+        _gameObjects.add(scoreOne);
+        _gameObjects.add(scoreTwo);
+
         ball.SetVelocity(new Vec2(10,20));
 
         //Get 2d graphics context
@@ -274,8 +285,11 @@ public class PongGameTest
         //Set the rendering "units"
         GameObject.SetWorldWidth(200);
         GameObject.SetWorldHeight(200);
+
         paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, 0);
         paddle2.SetPosition((GameObject.GetWorldWidth() / 2.0f) - 10.0f, 0);
+        scoreOne.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, (float)(GameObject.GetWorldHeight() / 2.0));
+        scoreTwo.SetPosition((GameObject.GetWorldWidth() / 2.0f) - 10.0f, (float)(GameObject.GetWorldHeight() / 2.0));
         //Example anonymous loop
         new AnimationTimer() 
         {   
@@ -284,12 +298,15 @@ public class PongGameTest
             {
                 if(_client.GetConnected() && _client.ready)
                 {
-                        
-                   System.out.println("Connected to and ready");
-
-                    //Gets different time values
-                    //SHOULD JUST MAKE TIMER CLASS THAT CONVERTS NANOTIME
-                    double totalTime = (currentNanoTime - startNanoTime) / 1000000000.0;
+                    //Highlight the paddle you control
+                    if (_client.playerNum == 1)
+                    {
+                        paddle1.SetFillColor(Color.AQUA);
+                    }
+                    else
+                    {
+                        paddle2.SetFillColor(Color.AQUA);
+                    }
                     
                     //Get window width and height
                     int windowWidth = (int)gameCanvas.getWidth();
@@ -302,8 +319,7 @@ public class PongGameTest
                     //Clear screen
                     context.clearRect(0, 0, windowWidth, windowHeight);
 
-                    //Updates our objects' position
-                    //ball.SetPosition((float)Math.sin(totalTime) * 50.0f, 0.0f);
+                    //Updates our balls' position
                     ball.PhysicsUpdate();
 
                     if(ball.Collision(paddle1))
@@ -315,54 +331,112 @@ public class PongGameTest
                         ball.SetVelocityX(-(Math.abs(ball.GetVelocity()._x)));
                     }
 
-                    
+                    if (!gameOver) 
+                    {
+                        if (_client.playerNum == 1) 
+                        {
+                            if (_up && (paddle1.GetPositionY() >= -(GameObject.GetWorldHeight() / 2.0))) 
+                            {
+                                paddle1.SetPosition(new Vec2(paddle1.GetPositionX(), paddle1.GetPositionY() - 2));
+                            }
+                            if (_down && (paddle1.GetPositionY() <= (GameObject.GetWorldHeight() / 2.0) - 30)) 
+                            {
+                                paddle1.SetPosition(new Vec2(paddle1.GetPositionX(), paddle1.GetPositionY() + 2));
+                            }
+                        }
+                        else if (_client.playerNum == 2) 
+                        {
+                            if (_up && (paddle2.GetPositionY() >= -(GameObject.GetWorldHeight() / 2.0))) 
+                            {
+                                paddle2.SetPosition(new Vec2(paddle2.GetPositionX(), paddle2.GetPositionY() - 2));
+                            }
+                            if (_down && (paddle2.GetPositionY() <= (GameObject.GetWorldHeight() / 2.0) - 30)) 
+                            {
+                                paddle2.SetPosition(new Vec2(paddle2.GetPositionX(), paddle2.GetPositionY() + 2));
+                            }
+                        }
+                    }
 
-                    if(_client.playerNum == 1)
+                    //Handle score
+                    if (ball._position._x <= -(GameObject.GetWorldWidth() / 2.0))
                     {
-                        //paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, (float)Math.sin(totalTime) * 50.0f);
-                        if(_up && !(paddle1.GetPositionY() <= -(GameObject.GetWorldHeight() / 2.0)))
-                        {
-                            paddle1.SetPosition(new Vec2(paddle1.GetPositionX(), 
-                            paddle1.GetPositionY() - 2));
-                        }
-                        if(_down && !(paddle1.GetPositionY() >= (GameObject.GetWorldHeight() / 2.0)))
-                        {
-                            paddle1.SetPosition(new Vec2(paddle1.GetPositionX(), 
-                            paddle1.GetPositionY() + 2));
-                        }
+                        //Increase player 2 score
+                        player2Score++;
+
+                        //Reset ball
+                        ball.SetPosition(new Vec2());
+                        ball.SetVelocity(new Vec2(10,20));
                     }
-                    if(_client.playerNum == 2)
+                    else if (ball._position._x >= (GameObject.GetWorldWidth() / 2.0))
                     {
-                        if(_up)
-                        {
-                            paddle2.SetPosition(new Vec2(paddle2.GetPositionX(), 
-                            paddle2.GetPositionY() - 2));
-                        }
-                        if(_down)
-                        {
-                            paddle2.SetPosition(new Vec2(paddle2.GetPositionX(), 
-                            paddle2.GetPositionY() + 2));
-                        }
-                        //if(_left)
-                        //{
-                        //    paddle2.SetPosition(new Vec2(paddle2.GetPositionX() - 2, 
-                        //    paddle2.GetPositionY()));
-                        //}
-                        //if(_right)
-                        //{
-                        //    paddle2.SetPosition(new Vec2(paddle2.GetPositionX() + 2, 
-                        //    paddle2.GetPositionY()));
-                        //}
+                        //Increase player 1 score
+                        player1Score++;
+
+                        //Reset ball
+                        ball.SetPosition(new Vec2());
+                        ball.SetVelocity(new Vec2(10,20));
                     }
+
+                    if (player1Score >= 10 && !gameOver)
+                    {
+                        if (_client.playerNum == 1)
+                        {
+                            TextGameObject winner = new TextGameObject("You win!", 
+                            Font.font("impact", 80), new Vec2(), new Vec2(), Color.WHITE, Color.BLACK);
+
+                            _gameObjects.add(winner);
+                        }
+                        else
+                        {
+                            TextGameObject loser = new TextGameObject("You Lose!!!", 
+                            Font.font("impact", 80), new Vec2(), new Vec2(), Color.WHITE, Color.BLACK);
+
+                            _gameObjects.add(loser);
+                        }
+
+                        //Stop ball
+                        ball.SetVelocity(new Vec2());
+                        //Set game to over
+                        gameOver = true;
+                    }
+                    else if (player2Score >= 10 && !gameOver)
+                    {
+                        if (_client.playerNum == 1)
+                        {
+                            TextGameObject loser = new TextGameObject("You Lose!!!", 
+                            Font.font("impact", 80), new Vec2(), new Vec2(), Color.WHITE, Color.BLACK);
+
+                            _gameObjects.add(loser);
+                        }
+                        else
+                        {
+                            TextGameObject winner = new TextGameObject("You win!", 
+                            Font.font("impact", 80), new Vec2(), new Vec2(), Color.WHITE, Color.BLACK);
+
+                            _gameObjects.add(winner);
+                        }
+
+                        //Stop ball
+                        ball.SetVelocity(new Vec2());
+                        //Set game to over
+                        gameOver = true;
+                        //Disconnect client
+                        _client.DisconnectFromServer();
+                    }
+
+                    scoreOne.SetText(Integer.toString(player1Score));
+                    scoreTwo.SetText(Integer.toString(player2Score));
 
                     //Sends data to server (only if client is connected)
                     for (int i = 0; i < _gameObjects.size(); i++)
                     {
                         _gameObjects.get(i).Draw(context);
-                        //_gameObjects.get(i).SendPositionData(_client);
                     }
 
-                    switch (_client.playerNum) {
+                    if (!gameOver)
+                    {
+                        switch (_client.playerNum) 
+                        {
                         case 1:
                             paddle1.SendPositionData(_client);
                             paddle2.SetPositionY(_client.ReadPosition());
@@ -373,9 +447,8 @@ public class PongGameTest
                             break;
                         default:
                             break;
+                        }
                     }
-                    //System.out.println("At the bottom");
-                    //float temp = _client.ReadPosition();
                 }
             }
         }.start();

@@ -17,6 +17,8 @@ public class TextGameObject extends GameObject
     public TextGameObject()
     {
         super();
+
+        
     }
 
     public TextGameObject(String text, Font font, Vec2 pos, Vec2 size, Paint fill, Paint stroke)
