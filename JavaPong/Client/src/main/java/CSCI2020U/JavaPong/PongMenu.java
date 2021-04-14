@@ -84,20 +84,16 @@ public class PongMenu extends Application
          view.setFitHeight(100);
          view.setPreserveRatio(true);
          Button playButton = new Button();
-         playButton.setTranslateX(200);
-         playButton.setTranslateY(25);
-         //Setting the size of the button
          playButton.setPrefSize(80, 80);
-         //Setting a graphic to the button
          playButton.setGraphic(view);
         //  playButton.setTranslateX(200);
         //  playButton.setTranslateY(25);
-        //  playButton.setPrefSize(80, 80);
-        //  playButton.setGraphic(view);
-        //  menu.add(playButton, 0, 0);
-        //  GridPane.setHalignment(playButton, HPos.CENTER);
-        //  playButton.setMaxSize(800, 650);
-        //  playButton.setMinSize(150, 80);
+         playButton.setPrefSize(80, 80);
+         playButton.setGraphic(view);
+         menu.add(playButton, 0, 0);
+         GridPane.setHalignment(playButton, HPos.CENTER);
+         playButton.setMaxSize(800, 650);
+         playButton.setMinSize(150, 80);
  
          playButton.setOnAction(value ->  {
              testScene.start(primaryStage); 
