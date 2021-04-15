@@ -18,8 +18,8 @@ public class PongClient
 
 	private Text _connected = null;
 
-	public int playerNum;
-	public boolean ready = false;
+	public int _playerNum;
+	public boolean _ready = false;
 
 	public PongClient(String host, int port, Text connected) 
 	{
@@ -57,14 +57,14 @@ public class PongClient
 			System.out.println("reading in");
 			line = _in.readLine();
 			System.out.println(line);
-			playerNum = Integer.parseInt(line);
+			_playerNum = Integer.parseInt(line);
 			
 		}
 		catch (IOException e) 
 		{
 			e.printStackTrace();
 		}
-		return playerNum;
+		return _playerNum;
 	}
 
 	public float ReadPosition()
@@ -118,7 +118,7 @@ public class PongClient
 
 			//if(line.equalsIgnoreCase("READY"))
 			//{
-				ready = true;
+				_ready = true;
 			//}
 			//System.out.println("sent");
 

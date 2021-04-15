@@ -16,18 +16,25 @@ public class TextGameObject extends GameObject
 
     public TextGameObject()
     {
+        //Default super constructor
         super();
 
+        //Default text values
+        SetText("Default");
+        SetFont(Font.font("Arial"));
         
     }
 
     public TextGameObject(String text, Font font, Vec2 pos, Vec2 size, Paint fill, Paint stroke)
     {
+        //Use super constructor
         super(pos, size);
 
+        //Set text and font
         SetText(text);
         SetFont(font);
 
+        //Set fill and stroke
         SetFillColor(fill);
         SetStrokeColor(stroke);
     }

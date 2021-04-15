@@ -11,48 +11,32 @@ import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-//import javafx.scene.input;
-import java.lang.Object;
-import java.lang.Enum;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.event.EventHandler;
 
-public class PongGameTest 
+public class PongGame 
 {
     public Parent _mainMenuRoot = null;
     public String _mainMenuName = "";
     public Parent _sceneRoot = null;
 
-    public List<GameObject> _gameObjects = new ArrayList();
+    public List<GameObject> _gameObjects = new ArrayList<>();
 
     public PongClient _client = new PongClient("localhost", 8081, null);
 
-    private int playerNum = 0;
+    private int _player1Score = 0;
+    private int _player2Score = 0;
 
-    private int player1Score = 0;
-    private int player2Score = 0;
-
-    private boolean gameOver = false;
-
-    private boolean recv = false;
+    private boolean _gameOver = false;
 
     private boolean _up = false;
     private boolean _down = false;
-    private boolean _left = false;
-    private boolean _right = false;
-
-    PongGameTest()
-    {
-
-    }
  
     public void start(Stage primaryStage)
     {
@@ -69,7 +53,7 @@ public class PongGameTest
             // Sets the top value to the menu
             GridPane topMenu = new GridPane();
             root.setTop(topMenu);
-            root.setAlignment(topMenu, Pos.CENTER);
+            BorderPane.setAlignment(topMenu, Pos.CENTER);
             SetBackgroundColor(topMenu, Color.DARKGREY);
 
             // Set up the menu at the top
@@ -93,26 +77,18 @@ public class PongGameTest
 
     public void SetupKeyListener(Stage primaryStage)
     {
-        //Scene scene = _sceneRoot.getScene();
-
         primaryStage.getScene().setOnKeyPressed(new EventHandler<KeyEvent>(){
             @Override
             public void handle(KeyEvent event)
             {
-                switch (event.getCode()) {
+                switch (event.getCode()) 
+                {
                     case W:
                         _up = true;
                         break;
                     case S:
                         _down = true;
                         break;
-                    case A:
-                        _left = true;
-                        break;
-                    case D:
-                        _right = true;
-                        break;
-                
                     default:
                         break;
                 }
@@ -132,13 +108,6 @@ public class PongGameTest
                     case S:
                         _down = false;
                         break;
-                    case A:
-                        _left = false;
-                        break;
-                    case D:
-                        _right = false;
-                        break;
-                
                     default:
                         break;
                 }
@@ -242,14 +211,10 @@ public class PongGameTest
 
     public void TestUpdateInit(BorderPane root)
     {
-        //Get the start time (this should be moved into some sort of timer class)
-        final long startNanoTime = System.nanoTime();
-        long lastNanoTime = 10;
-
         //Wrapper pane so game canvas resizes properly
         Pane wrapperPane = new Pane();
         root.setCenter(wrapperPane);
-        root.setAlignment(wrapperPane, Pos.CENTER);
+        BorderPane.setAlignment(wrapperPane, Pos.CENTER);
         SetBackgroundColor(wrapperPane, Color.BLACK);
 
         //Sets center to the game canvas
@@ -266,9 +231,9 @@ public class PongGameTest
 
         //UI game Objects
         //Score
-        TextGameObject scoreOne = new TextGameObject(Integer.toString(player1Score), 
+        TextGameObject scoreOne = new TextGameObject(Integer.toString(_player1Score), 
         Font.font("arial", 40), new Vec2(), new Vec2(), Color.WHITE, Color.BLACK);
-        TextGameObject scoreTwo = new TextGameObject(Integer.toString(player2Score), 
+        TextGameObject scoreTwo = new TextGameObject(Integer.toString(_player2Score), 
         Font.font("arial", 40), new Vec2(), new Vec2(), Color.WHITE, Color.BLACK);
 
         //Win/Lose
@@ -284,7 +249,8 @@ public class PongGameTest
         _gameObjects.add(scoreOne);
         _gameObjects.add(scoreTwo);
 
-        ball.SetVelocity(new Vec2((float)((Math.random() % 10) + 5) * (float)((Math.random() % 2) - 1), 20));
+        //Set starting velocity
+        ball.SetVelocity(new Vec2(10, 20));
 
         //Get 2d graphics context
         GraphicsContext context = gameCanvas.getGraphicsContext2D();
@@ -293,6 +259,7 @@ public class PongGameTest
         GameObject.SetWorldWidth(200);
         GameObject.SetWorldHeight(200);
 
+        //Set the position based on the world "rendering units"
         paddle1.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, 0);
         paddle2.SetPosition((GameObject.GetWorldWidth() / 2.0f) - 10.0f, 0);
         scoreOne.SetPosition(-(GameObject.GetWorldWidth() / 2.0f) + 5.0f, (float)(GameObject.GetWorldHeight() / 2.0));
@@ -303,7 +270,7 @@ public class PongGameTest
             @Override
             public void handle(long currentNanoTime) 
             {
-                if(_client.GetConnected() && _client.ready && !gameOver)
+                if(_client.GetConnected() && _client._ready && !_gameOver)
                 {
                     // Update window data and clear our screen
                     UpdateScreenData(gameCanvas, context);
@@ -349,7 +316,7 @@ public class PongGameTest
     public void HighlightControlledPaddle(RectGameObject paddle1, RectGameObject paddle2)
     {
         // Highlight the paddle you control
-        if (_client.playerNum == 1) 
+        if (_client._playerNum == 1) 
         {
             paddle1.SetFillColor(Color.AQUA);
         } 
@@ -376,7 +343,7 @@ public class PongGameTest
 
     public void UpdatePaddleMovement(GameObject paddle1, GameObject paddle2)
     {
-        if (_client.playerNum == 1) 
+        if (_client._playerNum == 1) 
         {
             if (_up && (paddle1.GetPositionY() >= -(GameObject.GetWorldHeight() / 2.0))) 
             {
@@ -387,7 +354,7 @@ public class PongGameTest
                 paddle1.SetPosition(new Vec2(paddle1.GetPositionX(), paddle1.GetPositionY() + 2));
             }
         } 
-        else if (_client.playerNum == 2) 
+        else if (_client._playerNum == 2) 
         {
             if (_up && (paddle2.GetPositionY() >= -(GameObject.GetWorldHeight() / 2.0))) 
             {
@@ -406,14 +373,14 @@ public class PongGameTest
         if (ball._position._x <= -(GameObject.GetWorldWidth() / 2.0))
         {
             //Increase player 2 score
-            player2Score++;
+            _player2Score++;
 
             ResetBall(ball);
         }
         else if (ball._position._x >= (GameObject.GetWorldWidth() / 2.0))
         {
             //Increase player 1 score
-            player1Score++;
+            _player1Score++;
 
             ResetBall(ball);
         }
@@ -421,9 +388,9 @@ public class PongGameTest
 
     public void CheckWinLose(GameObject ball, GameObject winner, GameObject loser)
     {
-        if (player1Score >= 10 && !gameOver) 
+        if (_player1Score >= 10 && !_gameOver) 
         {
-            if (_client.playerNum == 1) 
+            if (_client._playerNum == 1) 
             {
                 _gameObjects.add(winner);
             } 
@@ -435,13 +402,13 @@ public class PongGameTest
             // Stop ball
             StopBall(ball);
             // Set game to over
-            gameOver = true;
+            _gameOver = true;
             // Disconnect client
             _client.DisconnectFromServer();
         } 
-        else if (player2Score >= 10 && !gameOver) 
+        else if (_player2Score >= 10 && !_gameOver) 
         {
-            if (_client.playerNum == 1) 
+            if (_client._playerNum == 1) 
             {
                 _gameObjects.add(loser);
             } 
@@ -453,7 +420,7 @@ public class PongGameTest
             // Stop ball
             StopBall(ball);
             // Set game to over
-            gameOver = true;
+            _gameOver = true;
             // Disconnect client
             _client.DisconnectFromServer();
         }
@@ -461,8 +428,8 @@ public class PongGameTest
 
     public void UpdateScoreDisplay(TextGameObject scoreOne, TextGameObject scoreTwo)
     {
-        scoreOne.SetText(Integer.toString(player1Score));
-        scoreTwo.SetText(Integer.toString(player2Score));
+        scoreOne.SetText(Integer.toString(_player1Score));
+        scoreTwo.SetText(Integer.toString(_player2Score));
     }
     
     public void Draw(GraphicsContext context)
@@ -475,7 +442,7 @@ public class PongGameTest
 
     public void UpdateNetworkedPositions(GameObject paddle1, GameObject paddle2)
     {
-        switch (_client.playerNum) 
+        switch (_client._playerNum) 
         {
         case 1:
             paddle1.SendPositionData(_client);
@@ -495,7 +462,7 @@ public class PongGameTest
         //Reset position to center
         ball.SetPosition(new Vec2());
         //Random left or right and up or down
-        ball.SetVelocity(new Vec2(10 * (float)((Math.random() % 2) - 1), 20 *  (float)((Math.random() % 2) - 1)));
+        ball.SetVelocity(new Vec2(10, 20));
     }
 
     public void StopBall(GameObject ball)

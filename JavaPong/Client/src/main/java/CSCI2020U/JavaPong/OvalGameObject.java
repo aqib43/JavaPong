@@ -3,6 +3,7 @@ package CSCI2020U.JavaPong;
 import java.util.List;
 
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
 public class OvalGameObject extends GameObject 
@@ -14,6 +15,11 @@ public class OvalGameObject extends GameObject
     {
         //Just calls base class constructor
         super();
+
+        //Set fill
+        SetFillColor(Color.BLACK);
+        //Set stroke
+        SetStrokeColor(Color.WHITE);
     }
 
     public OvalGameObject(Vec2 position, Vec2 size, Paint fill, Paint stroke)
